@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#f8f4ef" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Earplug Tracker" />
+  <title>Mack's Earplug Tracker</title>
+  <link rel="manifest" href="manifest.json" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(135deg, #f8f4ef 0%, #ede8e0 100%);
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 24px 16px 40px;
+      color: #1a1a1a;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: #1a1a1a;
+      line-height: 1.1;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .header-sub {
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      color: #888;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    /* Cards grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .cards-grid .card:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+      max-width: calc(50% - 5px);
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 14px 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border: 2.5px solid transparent;
+    }
+    .card:active { transform: scale(0.97); }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .card-name {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 1.2;
+    }
+    .card-sub { font-size: 11px; color: #888; margin-top: 2px; }
+    .card-dot-wrap { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .card-dot { width: 16px; height: 16px; border-radius: 50%; border: 2px solid; flex-shrink: 0; }
+    .card-db { font-size: 10px; font-weight: 800; white-space: nowrap; }
+    .card-avg {
+      display: inline-block;
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+      margin-top: 8px;
+      letter-spacing: 0.02em;
+    }
+
+    /* Detail panel */
+    .panel {
+      background: #fff;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 20px;
+      border: 2px solid transparent;
+    }
+    .panel-header { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+    .panel-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid; flex-shrink: 0; }
+    .panel-name { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 18px; }
+    .panel-sub { font-size: 12px; color: #888; display: flex; align-items: center; gap: 6px; margin-top: 1px; }
+    .nrr-pill {
+      font-weight: 800;
+      font-size: 11px;
+      border-radius: 6px;
+      padding: 1px 7px;
+      letter-spacing: 0.03em;
+    }
+    .panel-avg { margin-left: auto; border-radius: 20px; padding: 2px 10px; font-size: 13px; font-weight: 800; color: #fff; letter-spacing: 0.02em; }
+
+    /* Rating rows */
+    .field-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #555;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .field-wrap { margin-bottom: 20px; }
+    .dots-row { display: flex; gap: 4px; align-items: center; }
+    .dot-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px;
+      font-size: 20px;
+      line-height: 1;
+      transition: color 0.1s, transform 0.1s;
+      color: #ccc;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .dot-btn.filled { color: inherit; }
+    .dot-btn:active { transform: scale(1.3); }
+    .rating-val { margin-left: 4px; font-size: 13px; font-weight: 700; }
+
+    textarea {
+      width: 100%;
+      border: 1.5px solid #ddd;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      color: #1a1a1a;
+      background: #fafafa;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .actions { display: flex; gap: 10px; margin-top: 4px; }
+    .btn-save {
+      flex: 1;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 0;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #fff;
+    }
+    .btn-save.saved { background: #e8f5e9 !important; color: #2e7d32 !important; }
+    .btn-clear {
+      background: #f5f5f5;
+      color: #888;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* Comparison */
+    .comparison {
+      background: #fff;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    .comparison-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 14px;
+    }
+    .comp-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .comp-rank { font-weight: 700; font-size: 13px; color: #aaa; width: 18px; text-align: center; }
+    .comp-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid; flex-shrink: 0; }
+    .comp-name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .comp-bar-wrap { height: 6px; background: #f0f0f0; border-radius: 3px; margin-top: 4px; overflow: hidden; }
+    .comp-bar { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+    .comp-score { font-size: 14px; font-weight: 800; width: 36px; text-align: right; flex-shrink: 0; }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-sub">Mack's Earplugs</div>
+  <h1>Comfort &amp; Fit Tracker</h1>
+</div>
+
+<div class="cards-grid" id="cardsGrid"></div>
+
+<div class="panel" id="detailPanel">
+  <div class="panel-header" id="panelHeader"></div>
+
+  <div class="field-wrap">
+    <div class="field-label">😌 Comfort</div>
+    <div class="dots-row" id="rating-comfort"></div>
+  </div>
+  <div class="field-wrap">
+    <div class="field-label">🎯 Fit / Seal Quality</div>
+    <div class="dots-row" id="rating-fit"></div>
+  </div>
+  <div class="field-wrap">
+    <div class="field-label">🔇 Noise Blocking</div>
+    <div class="dots-row" id="rating-noise"></div>
+  </div>
+  <div class="field-wrap">
+    <div class="field-label">👆 Ease of Insertion</div>
+    <div class="dots-row" id="rating-insertion"></div>
+  </div>
+  <div class="field-wrap">
+    <div class="field-label">📝 Notes</div>
+    <textarea id="notesField" rows="3" placeholder="How did they feel? Any observations..."></textarea>
+  </div>
+
+  <div class="actions">
+    <button class="btn-save" id="btnSave" onclick="handleSave()">Save Ratings</button>
+    <button class="btn-clear" onclick="handleClear()">Clear</button>
+  </div>
+</div>
+
+<div class="comparison hidden" id="comparison">
+  <div class="comparison-title">Comparison</div>
+  <div id="compRows"></div>
+</div>
+
+<script>
+const EARPLUGS = [
+  { id: "original",   name: "Original Extreme Comfort", subtitle: "Soft Foam",       color: "#7bc67e", dark: "#4a9e4e", text: "#1a3d1c", db: 32 },
+  { id: "snore",      name: "Snore Blockers",           subtitle: "Extreme Comfort",  color: "#f5d76e", dark: "#c9a020", text: "#3d3000", db: 32 },
+  { id: "ultrasoft",  name: "Ultra Soft Comfy Cush",    subtitle: "Highest Rating",   color: "#b5845a", dark: "#7a5230", text: "#2a1500", db: 33 },
+  { id: "soundasleep",name: "Sound Asleep",             subtitle: "Extreme Comfort",  color: "#6aaed6", dark: "#2d7ab5", text: "#001f3d", db: 32 },
+  { id: "slimfit",    name: "Slim Fit Comfy Cush",      subtitle: "Slim Fit",         color: "#b39ddb", dark: "#7e57c2", text: "#1a0033", db: 31 },
+];
+
+const FIELDS = ["comfort", "fit", "noise", "insertion"];
+const STORAGE_KEY = "macks_earplug_tracker_v1";
+
+// Load or init state
+function loadEntries() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return Object.fromEntries(EARPLUGS.map(p => [p.id, { comfort: null, fit: null, noise: null, insertion: null, notes: "" }]));
+}
+
+function saveEntries() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+}
+
+let entries = loadEntries();
+let activeId = EARPLUGS[0].id;
+
+function getAvg(d) {
+  const vals = FIELDS.map(k => d[k]).filter(Boolean);
+  if (!vals.length) return null;
+  return vals.reduce((a, b) => a + b, 0) / vals.length;
+}
+
+// ── Cards ──────────────────────────────────────────────
+function renderCards() {
+  const grid = document.getElementById("cardsGrid");
+  grid.innerHTML = "";
+  EARPLUGS.forEach(p => {
+    const d = entries[p.id];
+    const avg = getAvg(d);
+    const isActive = p.id === activeId;
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.borderColor = isActive ? p.dark : p.color;
+    card.style.background = isActive ? p.color : "#fff";
+    card.style.boxShadow = isActive ? `0 4px 20px ${p.color}55` : "0 1px 4px rgba(0,0,0,0.06)";
+    card.style.transform = isActive ? "scale(1.02)" : "scale(1)";
+
+    const nameColor = isActive ? p.text : "#1a1a1a";
+    const subColor = isActive ? p.text + "bb" : "#888";
+    const dbColor = isActive ? p.text : p.dark;
+
+    card.innerHTML = `
+      <div class="card-top">
+        <div>
+          <div class="card-name" style="color:${nameColor}">${p.name}</div>
+          <div class="card-sub" style="color:${subColor}">${p.subtitle}</div>
+        </div>
+        <div class="card-dot-wrap">
+          <div class="card-dot" style="background:${p.color};border-color:${p.dark}"></div>
+          <div class="card-db" style="color:${dbColor}">${p.db} dB</div>
+        </div>
+      </div>
+      ${avg !== null ? `<div><span class="card-avg" style="background:${p.dark};box-shadow:0 2px 8px ${p.dark}55">avg ${avg.toFixed(1)}</span></div>` : ""}
+    `;
+    card.addEventListener("click", () => { activeId = p.id; render(); });
+    grid.appendChild(card);
+  });
+}
+
+// ── Panel ──────────────────────────────────────────────
+function renderPanel() {
+  const p = EARPLUGS.find(x => x.id === activeId);
+  const d = entries[activeId];
+  const avg = getAvg(d);
+
+  // Panel styling
+  const panel = document.getElementById("detailPanel");
+  panel.style.borderColor = p.color + "44";
+  panel.style.boxShadow = `0 4px 24px ${p.color}33`;
+
+  // Header
+  const header = document.getElementById("panelHeader");
+  header.innerHTML = `
+    <div class="panel-dot" style="background:${p.color};border-color:${p.dark}"></div>
+    <div>
+      <div class="panel-name">${p.name}</div>
+      <div class="panel-sub">
+        ${p.subtitle}
+        <span class="nrr-pill" style="background:${p.color};color:${p.text}">${p.db} dB NRR</span>
+      </div>
+    </div>
+    ${avg !== null ? `<div class="panel-avg" style="background:${p.dark};box-shadow:0 2px 8px ${p.dark}55">avg ${avg.toFixed(1)}</div>` : ""}
+  `;
+
+  // Ratings
+  FIELDS.forEach(field => {
+    const row = document.getElementById("rating-" + field);
+    row.innerHTML = "";
+    for (let n = 1; n <= 10; n++) {
+      const btn = document.createElement("button");
+      btn.className = "dot-btn" + (n <= (d[field] ?? 0) ? " filled" : "");
+      btn.style.color = n <= (d[field] ?? 0) ? p.dark : "#ccc";
+      btn.textContent = "●";
+      btn.setAttribute("aria-label", `${n}/10`);
+      btn.addEventListener("click", () => {
+        entries[activeId][field] = (entries[activeId][field] === n) ? null : n;
+        render();
+      });
+      row.appendChild(btn);
+    }
+    if (d[field]) {
+      const val = document.createElement("span");
+      val.className = "rating-val";
+      val.style.color = p.dark;
+      val.textContent = `${d[field]}/10`;
+      row.appendChild(val);
+    }
+  });
+
+  // Notes
+  const notesField = document.getElementById("notesField");
+  notesField.value = d.notes || "";
+  notesField.style.borderColor = p.color;
+  notesField.oninput = () => { entries[activeId].notes = notesField.value; };
+  notesField.onfocus = () => { notesField.style.borderColor = p.dark; };
+  notesField.onblur = () => { notesField.style.borderColor = p.color; };
+
+  // Save button
+  const btnSave = document.getElementById("btnSave");
+  btnSave.style.background = p.dark;
+  btnSave.classList.remove("saved");
+  btnSave.textContent = "Save Ratings";
+}
+
+// ── Comparison ─────────────────────────────────────────
+function renderComparison() {
+  const rated = EARPLUGS.filter(p => getAvg(entries[p.id]) !== null);
+  const comp = document.getElementById("comparison");
+  if (rated.length < 2) { comp.classList.add("hidden"); return; }
+  comp.classList.remove("hidden");
+
+  const rows = rated
+    .map(p => ({ p, avg: getAvg(entries[p.id]) }))
+    .sort((a, b) => b.avg - a.avg);
+
+  document.getElementById("compRows").innerHTML = rows.map((r, i) => `
+    <div class="comp-row">
+      <div class="comp-rank">#${i + 1}</div>
+      <div class="comp-dot" style="background:${r.p.color};border-color:${r.p.dark}"></div>
+      <div style="flex:1;min-width:0">
+        <div class="comp-name">${r.p.name}</div>
+        <div class="comp-bar-wrap">
+          <div class="comp-bar" style="width:${(r.avg / 10) * 100}%;background:${r.p.dark}"></div>
+        </div>
+      </div>
+      <div class="comp-score" style="color:${r.p.dark}">${r.avg.toFixed(1)}</div>
+    </div>
+  `).join("");
+}
+
+function render() {
+  renderCards();
+  renderPanel();
+  renderComparison();
+}
+
+function handleSave() {
+  saveEntries();
+  const btn = document.getElementById("btnSave");
+  btn.classList.add("saved");
+  btn.textContent = "✓ Saved";
+}
+
+function handleClear() {
+  entries[activeId] = { comfort: null, fit: null, noise: null, insertion: null, notes: "" };
+  saveEntries();
+  render();
+}
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+render();
+</script>
+</body>
+</html>

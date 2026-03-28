@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <rect width="192" height="192" rx="40" fill="#f8f4ef"/>
+  <!-- Green earplug -->
+  <ellipse cx="70" cy="80" rx="22" ry="30" fill="#7bc67e" stroke="#4a9e4e" stroke-width="3"/>
+  <!-- Purple earplug -->
+  <ellipse cx="122" cy="80" rx="22" ry="30" fill="#b39ddb" stroke="#7e57c2" stroke-width="3"/>
+  <!-- Brown earplug -->
+  <ellipse cx="70" cy="130" rx="22" ry="30" fill="#b5845a" stroke="#7a5230" stroke-width="3"/>
+  <!-- Blue earplug -->
+  <ellipse cx="122" cy="130" rx="22" ry="30" fill="#6aaed6" stroke="#2d7ab5" stroke-width="3"/>
+  <!-- Yellow earplug centered bottom -->
+  <ellipse cx="96" cy="165" rx="22" ry="20" fill="#f5d76e" stroke="#c9a020" stroke-width="3"/>
+</svg>

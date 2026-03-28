@@ -1,0 +1,18 @@
+{
+  "name": "Mack's Earplug Tracker",
+  "short_name": "Earplug Tracker",
+  "description": "Track comfort and fit ratings for Mack's soft foam earplugs",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f8f4ef",
+  "theme_color": "#f8f4ef",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
